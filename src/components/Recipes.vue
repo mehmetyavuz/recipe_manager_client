@@ -57,7 +57,7 @@
 
 <script>
 export default {
-  name: "ingredients-comp",
+  name: "recipes-comp",
   data() {
     return {
       units: [],
