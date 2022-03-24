@@ -1,175 +1,52 @@
 <template>
-  <div class="new_ingredient">
-    <form v-on:submit.prevent="submitForm">
-      <div class="form-group">
-        <label for="article_number">Article Number</label>
-        <input type="number" class="form-control" id="article_number" v-model="article_number">
-      </div>
-      <div class="form-group">
-        <label for="name">Title</label>
-        <input type="text" class="form-control" id="name" v-model="name">
-      </div>
-      <div class="form-group">
-        <label for="amount">Amount</label>
-        <input type="number" class="form-control" id="amount" v-model="amount">
-      </div>
-      <div class="form-group">
-        <label for="unit">Unit</label>
-        <select v-model="unit" id="unit">
-          <option v-for="(u, i) in units" :key="i" :value="u.id">{{ u.name }}</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="cost">Cost</label>
-        <input type="text" class="form-control" id="cost" v-model="cost">
-      </div>
-      <div class="form-group">
-        <button type="submit">Save Ingredient</button>
-      </div>
-    </form>
-  </div>
+  <h1>Recipes</h1>
 
-  <div class="ingredients_content">
-    <h1>Ingredients</h1>
-    <ul class="ingredients_list">
-      <li v-for="ingredient in ingredients" :key="ingredient.id">
-        <h2>{{ ingredient.name }}</h2>
-        <p>Article number : {{ ingredient.article_number }}</p>
-        <p>amount: <input type="number" v-model="ingredient.amount"></p>
-        <p>unit:
-          <select v-model="ingredient.unit">
-            <option v-for="(u, i) in units" :key="i" :value="u.id" :selected="u.id === ingredient.unit.id">
-              {{ u.name }}
-            </option>
-          </select>
-          <!--          <input type="text" v-model="ingredient.unit.name">-->
-        </p>
-        <p>cost: <input type="number" v-model="ingredient.cost"></p>
-        <!--        <button @click="toggleTask(ingredient)">-->
-        <!--          {{ ingredient.completed ? 'Undo' : 'Complete' }}-->
-        <!--        </button>-->
-        <button @click="saveIngredient(ingredient)">Save</button>
-        <button @click="deleteIngredient(ingredient)">Delete</button>
-      </li>
-    </ul>
+  <div class="d-flex align-items-start">
+    <div class="nav flex-column nav-pills me-3 my-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+      <button v-for="(recipe, index) in recipes" :key="recipe.id"
+              class="nav-link" :class="{active: index === 0}" :id="'v-pills-'+recipe.id+'-tab'" data-bs-toggle="pill"
+              :data-bs-target="'#v-pills-'+recipe.id"
+              type="button" role="tab" :aria-controls="'v-pills-'+recipe.id" aria-selected="true">
+        {{ recipe.name }}
+      </button>
+    </div>
+    <div class="tab-content" id="v-pills-tabContent">
+      <div v-for="(recipe, index) in recipes" :key="recipe.id"
+           class="tab-pane fade show " :class="{active: index === 0}" :id="'v-pills-'+recipe.id" role="tabpanel"
+           :aria-labelledby="'v-pills-'+recipe.id+'-tab'">
+
+        <RecipeIngredients :obj_id="recipe.id" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import RecipeIngredients from "@/components/RecipeIngredients";
+
 export default {
   name: "recipes-comp",
+  components: {
+    RecipeIngredients
+  },
   data() {
     return {
-      units: [],
-      ingredients: [],
-      name: '',
-      article_number: '',
-      unit: '',
-      amount: 0,
-      cost: 0
+      recipes: [],
     }
   },
   methods: {
-    getUnits() {
+    getRecipes() {
       try {
-        fetch('http://127.0.0.1:8000/ingredients/units/')
+        fetch('http://127.0.0.1:8000/recipes/recipes/')
             .then(response => response.json())
-            .then(data => this.units = data);
+            .then(data => this.recipes = data);
       } catch (error) {
         console.log(error);
       }
     },
-    getData() {
-      try {
-        fetch('http://127.0.0.1:8000/ingredients/')
-            .then(response => response.json())
-            .then(data => this.ingredients = data);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    submitForm() {
-      try {
-        let body = {
-          name: this.name,
-          article_number: this.article_number,
-          unit: this.unit,
-          amount: this.amount,
-          cost: this.cost
-        };
-        fetch('http://127.0.0.1:8000/ingredients/', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(body)
-        })
-            .then(res => res.json())
-            .then(data => {
-              this.ingredients.push(data);
-              console.log('Success:', data);
-            })
-            .catch(err => {
-              console.log('Error:', err);
-            });
-        this.name = '';
-        this.article_number = '';
-        this.unit = '';
-        this.amount = 0;
-        this.cost = 0;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    saveIngredient(ingredient) {
-      try {
-        let body = {
-          name: ingredient.name,
-          article_number: ingredient.article_number,
-          unit: ingredient.unit,
-          amount: ingredient.amount,
-          cost: ingredient.cost,
-        };
-        fetch(`http://127.0.0.1:8000/ingredients/${ingredient.id}/`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
-        })
-            .then(response => response.json())
-            .then(data => {
-
-              let ingredientIndex = this.ingredients.findIndex(t => t.id === ingredient.id);
-              this.ingredients = this.ingredients.map((ingredient) => {
-                if (this.ingredients.findIndex(t => t.id === ingredient.id) === ingredientIndex) {
-                  return data;
-                }
-                return ingredient;
-              });
-              console.log('Success:', data);
-            })
-            .catch((error) => {
-              console.error('Error:', error);
-            });
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    deleteIngredient(ingredient) {
-      let confirmation = confirm("Do you want to delete this ingredient?");
-      if (confirmation) {
-        try {
-          fetch(`http://127.0.0.1:8000/ingredients/${ingredient.id}`, {
-            method: 'DELETE'
-          }).then(() => this.getData());
-        } catch (error) {
-          console.log(error)
-        }
-      }
-    }
   },
   created() {
-    this.getUnits();
-    this.getData();
+    this.getRecipes();
   }
 }
 </script>
