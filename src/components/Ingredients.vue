@@ -16,7 +16,7 @@
       <div class="form-group">
         <label for="unit">Unit</label>
         <select v-model="unit" id="unit">
-          <option v-for="(u, i) in units" :key="i" :value="u.id">{{ u.name }}</option>
+          <option v-for="(u, i) in this.$units" :key="i" :value="u.id">{{ u.name }}</option>
         </select>
       </div>
       <div class="form-group">
@@ -38,16 +38,12 @@
         <p>amount: <input type="number" v-model="ingredient.amount"></p>
         <p>unit:
           <select v-model="ingredient.unit">
-            <option v-for="(u, i) in units" :key="i" :value="u.id" :selected="u.id === ingredient.unit.id">
+            <option v-for="(u, i) in this.$units" :key="i" :value="u.id" :selected="u.id === ingredient.unit.id">
               {{ u.name }}
             </option>
           </select>
-          <!--          <input type="text" v-model="ingredient.unit.name">-->
         </p>
         <p>cost: <input type="number" v-model="ingredient.cost"></p>
-        <!--        <button @click="toggleTask(ingredient)">-->
-        <!--          {{ ingredient.completed ? 'Undo' : 'Complete' }}-->
-        <!--        </button>-->
         <button @click="saveIngredient(ingredient)">Save</button>
         <button @click="deleteIngredient(ingredient)">Delete</button>
       </li>
@@ -60,7 +56,6 @@ export default {
   name: "ingredients-comp",
   data() {
     return {
-      units: [],
       ingredients: [],
       name: '',
       article_number: '',
@@ -70,16 +65,7 @@ export default {
     }
   },
   methods: {
-    getUnits() {
-      try {
-        fetch('http://127.0.0.1:8000/ingredients/units/')
-            .then(response => response.json())
-            .then(data => this.units = data);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    getData() {
+    getIngredients() {
       try {
         fetch('http://127.0.0.1:8000/ingredients/')
             .then(response => response.json())
@@ -104,11 +90,11 @@ export default {
         })
             .then(res => res.json())
             .then(data => {
-              this.ingredients.push(data);
-              console.log('Success:', data);
+              this.getIngredients()
+              console.log('Success:', data)
             })
             .catch(err => {
-              console.log('Error:', err);
+              console.log('Error:', err)
             });
         this.name = '';
         this.article_number = '';
@@ -138,14 +124,16 @@ export default {
             .then(response => response.json())
             .then(data => {
 
-              let ingredientIndex = this.ingredients.findIndex(t => t.id === ingredient.id);
-              this.ingredients = this.ingredients.map((ingredient) => {
-                if (this.ingredients.findIndex(t => t.id === ingredient.id) === ingredientIndex) {
-                  return data;
-                }
-                return ingredient;
-              });
-              console.log('Success:', data);
+              this.getIngredients()
+              // let ingredientIndex = this.ingredients.findIndex(t => t.id === ingredient.id);
+              // let new_ingredients = this.ingredients.map((ingredient) => {
+              //   if (this.ingredients.findIndex(t => t.id === ingredient.id) === ingredientIndex) {
+              //     return data;
+              //   }
+              //   return ingredient;
+              // });
+              console.log('Success:', data)
+              alert(`${body.name} updated!`)
             })
             .catch((error) => {
               console.error('Error:', error);
@@ -160,7 +148,9 @@ export default {
         try {
           fetch(`http://127.0.0.1:8000/ingredients/${ingredient.id}`, {
             method: 'DELETE'
-          }).then(() => this.getData());
+          }).then(() =>
+              this.getIngredients()
+          );
         } catch (error) {
           console.log(error)
         }
@@ -168,8 +158,7 @@ export default {
     }
   },
   created() {
-    this.getUnits();
-    this.getData();
+    this.getIngredients()
   }
 }
 </script>

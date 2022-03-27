@@ -1,0 +1,10 @@
+- style
+  - ingredients
+    - add new - popup
+    - list - cards
+- search
+  - ingredients
+    - name
+    - article number
+- validations
+- tests
