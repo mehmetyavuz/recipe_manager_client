@@ -10,7 +10,7 @@
                 type="button" role="tab" aria-controls="v-recipe" aria-selected="false">Recipes
         </button>
       </div>
-      <div class="tab-content" id="v-tabContent">
+      <div class="tab-content w-100" id="v-tabContent">
         <div class="tab-pane fade show active" id="v-ingredient" role="tabpanel" aria-labelledby="v-ingredient-tab">
           <Ingredients />
         </div>

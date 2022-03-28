@@ -6,20 +6,21 @@
       <th>Unit Cost</th>
       <th>Amount</th>
       <th>Cost</th>
-      <th>Remove</th>
+      <th v-if="on_edit"></th>
     </tr>
     </thead>
     <tbody>
     <tr v-for="(i, index) in recipe_ingredients" :key="index">
       <td>{{ i.ingredient.name }}</td>
       <td>
-        {{ i.ingredient.amount }} {{ i.ingredient.unit.name }} = € {{ i.ingredient.cost }}
+        {{ i.ingredient.amount }} {{ i.ingredient.unit.name }}  € {{ i.ingredient.cost }}
       </td>
-      <td>
-        <input type="number" v-model="i.amount" @change="totalCost">
+      <td class="w-25">
+        <label v-if="!on_edit">{{ i.amount }}</label>
+        <input class="form-control w-50" v-if="on_edit" type="number" v-model="i.amount" @change="totalCost">
       </td>
       <td>€ {{ this.subTotal(index) }}</td>
-      <td>
+      <td v-if="on_edit">
         <button class="btn btn-sm btn-outline-danger" @click="remove(index)">REMOVE</button>
       </td>
     </tr>
@@ -28,33 +29,38 @@
     <tr>
       <th colspan="3" class="text-end">Total:</th>
       <th>€ {{ totalCost() }}</th>
-      <th></th>
+      <th v-if="on_edit"></th>
     </tr>
     </tfoot>
   </table>
 
-  <button type="button" class="btn btn-outline-success mx-1" data-bs-toggle="modal"
+
+  <button v-if="on_edit" type="button" class="btn btn-outline-success mx-1" data-bs-toggle="modal"
           data-bs-target="#modal-add-ri">
     Add Ingredient
   </button>
-  <button class="btn btn-outline-success mx-1" @click="saveRecipe">Save Recipe</button>
+  <button v-if="!on_edit" class="btn btn-outline-success mx-1" @click="editRecipe">Edit Recipe</button>
+  <button v-if="on_edit" class="btn btn-outline-primary mx-1 float-end" @click="saveRecipe">Save Recipe</button>
+  <button v-if="on_edit" class="btn btn-outline-danger mx-1 float-end" @click="cancelEdit">Cancel</button>
 </template>
 
 <script>
 export default {
   name: "recipe-ingredients",
-  components: {
-    // ModalAddRecipeIngredient
-  },
+  components: {},
   props: ['recipe'],
   data() {
     return {
       recipe_ingredients: [],
       new_ingredient: {},
-      new_amount: 0
+      new_amount: 0,
+      on_edit: false
     }
   },
   methods: {
+    addIngredient(ingredient) {
+      this.recipe_ingredients.push(ingredient)
+    },
     getData() {
       try {
         fetch('http://127.0.0.1:8000/recipes/' + this.recipe.id)
@@ -66,6 +72,13 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    cancelEdit() {
+      this.on_edit = false
+      this.getData()
+    },
+    editRecipe() {
+      this.on_edit = true
     },
     saveRecipe() {
       try {
@@ -79,6 +92,7 @@ export default {
             .then(response => response.json())
             .then(data => {
               this.recipe_ingredients = data
+              this.on_edit = false
               alert(`recipe updated!`)
               console.log('Success:', data);
             })

@@ -1,106 +1,72 @@
 <template>
-  <div class="new_ingredient">
-    <form v-on:submit.prevent="submitForm">
-      <div class="form-group">
-        <label for="article_number">Article Number</label>
-        <input type="number" class="form-control" id="article_number" v-model="article_number">
+  <div class="row">
+    <button type="button" class="btn btn-outline-success mx-1 col-3 mx-2"
+            data-bs-toggle="modal" data-bs-target="#modal-new-ingredient">
+      Create Ingredient
+    </button>
+    <div class="col-5">
+      <input type="text" v-model="search" id="" class="form-control"
+             placeholder="search by name or article number..." @keyup="searchIngredients">
+    </div>
+  </div>
+  <modal-new-ingredient @get-ingredients="getIngredients"/>
+  <hr>
+  <div class="row">
+    <div v-for="ingredient in (search.length > 0 ? search_result : ingredients)" :key="ingredient.id"
+         class="col-sm-3 card m-2">
+      <div class="card-body">
+        <h5 class="card-title">{{ ingredient.name }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Article number : {{ ingredient.article_number }}</h6>
+        <p class="card-text">{{ ingredient.amount }} {{ this.getUnit(ingredient.unit) }} € {{ ingredient.cost }}</p>
+        <a href="#" class="card-link" @click="this.setSelectedIngredient(ingredient)"
+           data-bs-toggle="modal" data-bs-target="#modal-edit-ingredient">
+          Edit
+        </a>
+        <a href="#" class="card-link" @click="deleteIngredient(ingredient)">Remove</a>
       </div>
-      <div class="form-group">
-        <label for="name">Title</label>
-        <input type="text" class="form-control" id="name" v-model="name">
-      </div>
-      <div class="form-group">
-        <label for="amount">Amount</label>
-        <input type="number" class="form-control" id="amount" v-model="amount">
-      </div>
-      <div class="form-group">
-        <label for="unit">Unit</label>
-        <select v-model="unit" id="unit">
-          <option v-for="(u, i) in this.$units" :key="i" :value="u.id">{{ u.name }}</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="cost">Cost</label>
-        <input type="text" class="form-control" id="cost" v-model="cost">
-      </div>
-      <div class="form-group">
-        <button type="submit">Save Ingredient</button>
-      </div>
-    </form>
+    </div>
   </div>
 
-  <div class="ingredients_content">
-    <h1>Ingredients</h1>
-    <ul class="ingredients_list">
-      <li v-for="ingredient in ingredients" :key="ingredient.id">
-        <h2>{{ ingredient.name }}</h2>
-        <p>Article number : {{ ingredient.article_number }}</p>
-        <p>amount: <input type="number" v-model="ingredient.amount"></p>
-        <p>unit:
-          <select v-model="ingredient.unit">
-            <option v-for="(u, i) in this.$units" :key="i" :value="u.id" :selected="u.id === ingredient.unit.id">
-              {{ u.name }}
-            </option>
-          </select>
-        </p>
-        <p>cost: <input type="number" v-model="ingredient.cost"></p>
-        <button @click="saveIngredient(ingredient)">Save</button>
-        <button @click="deleteIngredient(ingredient)">Delete</button>
-      </li>
-    </ul>
-  </div>
+  <modal-edit-ingredient @get-ingredients="getIngredients"
+                         ref="modalEditIngredient"/>
 </template>
 
 <script>
+import ModalNewIngredient from '@/components/ModalNewIngredient'
+import ModalEditIngredient from '@/components/ModalEditIngredient'
+
 export default {
+  components: {
+    ModalNewIngredient, ModalEditIngredient
+  },
   name: "ingredients-comp",
   data() {
     return {
       ingredients: [],
-      name: '',
-      article_number: '',
-      unit: '',
-      amount: 0,
-      cost: 0
+      search: '',
+      search_result: []
     }
   },
   methods: {
+    searchIngredients() {
+      this.search_result = isNaN(this.search)
+          ? this.ingredients.filter(i => i.name.toLowerCase().includes(this.search.toLowerCase()))
+          : this.ingredients.filter(i => i.article_number == this.search)
+    },
+    setSelectedIngredient(obj) {
+      this.$refs.modalEditIngredient.setIngredient(obj)
+    },
+    getUnit(id) {
+      return this.$units.find(u => u.id === id).name
+    },
     getIngredients() {
       try {
         fetch('http://127.0.0.1:8000/ingredients/')
             .then(response => response.json())
-            .then(data => this.ingredients = data);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    submitForm() {
-      try {
-        let body = {
-          name: this.name,
-          article_number: this.article_number,
-          unit: this.unit,
-          amount: this.amount,
-          cost: this.cost
-        };
-        fetch('http://127.0.0.1:8000/ingredients/', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(body)
-        })
-            .then(res => res.json())
             .then(data => {
-              this.getIngredients()
-              console.log('Success:', data)
-            })
-            .catch(err => {
-              console.log('Error:', err)
+              this.ingredients = data
+              this.searchIngredients()
             });
-        this.name = '';
-        this.article_number = '';
-        this.unit = '';
-        this.amount = 0;
-        this.cost = 0;
       } catch (error) {
         console.log(error);
       }
@@ -125,13 +91,6 @@ export default {
             .then(data => {
 
               this.getIngredients()
-              // let ingredientIndex = this.ingredients.findIndex(t => t.id === ingredient.id);
-              // let new_ingredients = this.ingredients.map((ingredient) => {
-              //   if (this.ingredients.findIndex(t => t.id === ingredient.id) === ingredientIndex) {
-              //     return data;
-              //   }
-              //   return ingredient;
-              // });
               console.log('Success:', data)
               alert(`${body.name} updated!`)
             })

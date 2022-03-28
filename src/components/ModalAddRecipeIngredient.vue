@@ -22,7 +22,7 @@
             <div class="mb-3 row">
               <label class="col-sm-3 col-form-label">Cost</label>
               <label class="col-sm-9 col-form-label">
-                {{ ingredient.amount }} {{ getUnit(ingredient.unit) }} € {{ ingredient.cost }}
+                {{ ingredient.amount }} {{ getUnit(ingredient.unit).name }} € {{ ingredient.cost }}
               </label>
             </div>
             <div class="mb-3 row">
@@ -49,10 +49,9 @@
 </template>
 
 <script>
-
 export default {
   name: "ModalAddRecipeIngredient",
-  props: ['recipe_id'],
+  props: ['recipe'],
   data() {
     return {
       ingredients: [],
@@ -72,34 +71,21 @@ export default {
       }
     },
     getUnit(id) {
-      return this.$units.find(u => u.id === id).name
+      return this.$units.find(u => u.id === id)
     },
     add() {
       if (this.ingredient.name) {
-        try {
-          let body = {
-            amount: this.amount,
-            recipe: this.recipe_id,
-            ingredient: this.ingredient.id
-          }
-          fetch(`http://127.0.0.1:8000/recipes/recipes/`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(body)
-          })
-              .then(res => res.json())
-              .then(data => {
-                this.$emit('update-recipe-ingredients')
-                console.log('Success:', data)
-
-                document.getElementById('btn-modal-close').click()
-              })
-              .catch(err => {
-                console.log('Error:', err)
-              });
-        } catch (error) {
-          console.log(error);
+        this.ingredient.unit = this.getUnit(this.ingredient.unit)
+        let ri = {
+          ingredient: this.ingredient,
+          amount: this.amount,
+          recipe: this.recipe
         }
+        this.$emit('add-recipe-ingredients', ri)
+        this.ingredient = {}
+        this.amount = 0
+        this.cost = 0
+        document.getElementById('btn-modal-close').click()
       }
     },
     total_cost() {
