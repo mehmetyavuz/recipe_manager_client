@@ -21,8 +21,3 @@ pnpm-debug.log*
 *.sw?
 
 /src/*
-/babel.config.js
-/jsconfig.json
-/package.json
-/package-lock.json
-/vue.config.json
