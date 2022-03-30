@@ -63,7 +63,7 @@ export default {
   methods: {
     getIngredients() {
       try {
-        fetch('https://receipe-manager.herokuapp.com/ingredients/')
+        fetch(`${this.$rootUrl}/ingredients/`)
             .then(response => response.json())
             .then(data => this.ingredients = data);
       } catch (error) {

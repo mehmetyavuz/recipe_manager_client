@@ -77,7 +77,7 @@ export default {
       if (confirm("Are you sure to delete the recipe?")) {
         console.log(id)
         try {
-          fetch(`https://receipe-manager.herokuapp.com/recipes/recipe/${id}`, {
+          fetch(`${this.$rootUrl}/recipes/recipe/${id}`, {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
           })
@@ -99,7 +99,7 @@ export default {
     },
     getRecipes() {
       try {
-        fetch('https://receipe-manager.herokuapp.com/recipes/recipes/')
+        fetch(`${this.$rootUrl}/recipes/recipes/`)
             .then(response => response.json())
             .then(data => {
               this.recipes = data

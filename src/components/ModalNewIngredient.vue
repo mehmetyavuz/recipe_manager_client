@@ -80,7 +80,7 @@ export default {
           amount: this.amount,
           cost: this.cost
         }
-        fetch('https://receipe-manager.herokuapp.com/ingredients/', {
+        fetch(`${this.$rootUrl}/ingredients/`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(body)

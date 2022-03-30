@@ -41,7 +41,7 @@ export default {
         let body = {
           name: this.name,
         };
-        fetch('https://receipe-manager.herokuapp.com/recipes/recipes/', {
+        fetch(`${this.$rootUrl}/recipes/recipes/`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(body)

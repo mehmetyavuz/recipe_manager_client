@@ -61,7 +61,7 @@ export default {
     },
     getIngredients() {
       try {
-        fetch('https://receipe-manager.herokuapp.com/ingredients/')
+        fetch(`${this.$rootUrl}/ingredients/`)
             .then(response => response.json())
             .then(data => {
               this.ingredients = data
@@ -80,7 +80,7 @@ export default {
           amount: ingredient.amount,
           cost: ingredient.cost,
         };
-        fetch(`https://receipe-manager.herokuapp.com/ingredients/${ingredient.id}/`, {
+        fetch(`${this.$rootUrl}/ingredients/${ingredient.id}/`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ export default {
       let confirmation = confirm("Do you want to delete this ingredient?");
       if (confirmation) {
         try {
-          fetch(`https://receipe-manager.herokuapp.com/ingredients/${ingredient.id}`, {
+          fetch(`${this.$rootUrl}/ingredients/${ingredient.id}`, {
             method: 'DELETE'
           }).then(() =>
               this.getIngredients()

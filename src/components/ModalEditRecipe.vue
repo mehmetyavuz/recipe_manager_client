@@ -41,7 +41,7 @@ export default {
     },
     save() {
       try {
-        fetch('https://receipe-manager.herokuapp.com/recipes/recipes/', {
+        fetch(`${this.$rootUrl}/recipes/recipes/`, {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(this.editing_recipe)

@@ -63,7 +63,7 @@ export default {
     },
     getData() {
       try {
-        fetch('https://receipe-manager.herokuapp.com/recipes/' + this.recipe.id)
+        fetch(`${this.$rootUrl}/recipes/${this.recipe.id}`)
             .then(response => response.json())
             .then(data => {
               this.recipe_ingredients = data
@@ -82,7 +82,7 @@ export default {
     },
     saveRecipe() {
       try {
-        fetch(`https://receipe-manager.herokuapp.com/recipes/update/${this.recipe.id}/`, {
+        fetch(`${this.$rootUrl}/recipes/update/${this.recipe.id}/`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

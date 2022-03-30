@@ -70,7 +70,7 @@ export default {
   methods: {
     save() {
       try {
-        fetch(`https://receipe-manager.herokuapp.com/ingredients/${this.ingredient.id}/`, {
+        fetch(`${this.$rootUrl}/ingredients/${this.ingredient.id}/`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
