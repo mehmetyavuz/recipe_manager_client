@@ -14,7 +14,7 @@
             <label for="ingredient" class="col-sm-3 col-form-label">Ingredient</label>
             <div class="col-sm-9">
               <select v-model="ingredient" id="ingredient" class="form-select">
-                <option v-for="(u, i) in ingredients" :key="i" :value="u">{{ u.name }}</option>
+                <option v-for="(u, i) in this.ingredients" :key="i" :value="u">{{ u.name }}</option>
               </select>
             </div>
           </div>
@@ -51,25 +51,15 @@
 <script>
 export default {
   name: "ModalAddRecipeIngredient",
-  props: ['recipe'],
+  props: ['recipe', 'ingredients'],
   data() {
     return {
-      ingredients: [],
       ingredient: {},
       amount: 0,
       cost: 0,
     }
   },
   methods: {
-    getIngredients() {
-      try {
-        fetch(`${this.$rootUrl}/ingredients/`)
-            .then(response => response.json())
-            .then(data => this.ingredients = data);
-      } catch (error) {
-        console.log(error);
-      }
-    },
     getUnit(id) {
       return this.$units.find(u => u.id === id)
     },
@@ -91,9 +81,6 @@ export default {
     total_cost() {
       return this.ingredient.cost * this.amount
     }
-  },
-  created() {
-    this.getIngredients()
   }
 }
 </script>

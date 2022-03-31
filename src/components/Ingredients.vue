@@ -66,6 +66,7 @@ export default {
             .then(data => {
               this.ingredients = data
               this.searchIngredients()
+              this.$emit('update-ingredients', data)
             });
       } catch (error) {
         console.log(error);

@@ -63,7 +63,7 @@ export default {
     },
     getData() {
       try {
-        fetch(`${this.$rootUrl}/recipes/${this.recipe.id}`)
+        fetch(`${this.$rootUrl}/recipes/${this.recipe.id}/`)
             .then(response => response.json())
             .then(data => {
               this.recipe_ingredients = data

@@ -12,11 +12,11 @@
         <a v-for="(recipe, index) in recipes" :key="recipe.id"
            class="list-group-item list-group-item-action" :class="{active: index === 0}"
            :id="'list-'+recipe.id+'-list'"
-           data-bs-toggle="list"
-           :href="'#list-'+recipe.id"
-           role="tab"
            :aria-controls="'list-'+recipe.id"
+           :href="'#list-'+recipe.id"
            @click="setSelectedRecipe(recipe)"
+           data-bs-toggle="list"
+           role="tab"
         >
           {{ recipe.name }}
           <button class="btn btn-danger btn-sm float-end" @click="deleteRecipe(recipe.id)">Delete</button>
@@ -47,7 +47,7 @@
   <modal-new-recipe @get-recipes="getRecipes"/>
   <modal-edit-recipe @get-recipes="getRecipes" :ref="(el) => {this.recipe_ref = el}"/>
   <modal-add-recipe-ingredient @add-recipe-ingredients="addRecipeIngredients"
-                               :recipe="this.selected_recipe"/>
+                               :recipe="this.selected_recipe" :ingredients='this.ingredients'/>
 </template>
 
 <script>
@@ -67,9 +67,13 @@ export default {
       recipe_ref: {},
       recipes: [],
       selected_recipe: {},
+      ingredients: []
     }
   },
   methods: {
+    updateIngredients(ingredients) {
+      this.ingredients = ingredients
+    },
     setEditingRecipe(recipe) {
       this.recipe_ref.setEditingRecipe(recipe)
     },
@@ -77,7 +81,7 @@ export default {
       if (confirm("Are you sure to delete the recipe?")) {
         console.log(id)
         try {
-          fetch(`${this.$rootUrl}/recipes/recipe/${id}`, {
+          fetch(`${this.$rootUrl}/recipes/recipe/${id}/`, {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
           })

@@ -11,10 +11,10 @@
       </div>
       <div class="tab-content w-100" id="v-tabContent">
         <div class="tab-pane fade show active" id="v-ingredient" role="tabpanel" aria-labelledby="v-ingredient-tab">
-          <Ingredients />
+          <Ingredients @update-ingredients='updateIngredients'/>
         </div>
         <div class="tab-pane fade" id="v-recipe" role="tabpanel" aria-labelledby="v-profile-tab">
-          <Recipes />
+          <Recipes ref="recipes" />
         </div>
       </div>
     </div>
@@ -29,6 +29,11 @@ export default {
   name: 'App',
   components: {
     Ingredients, Recipes
+  },
+  methods: {
+    updateIngredients(ingredients) {
+      this.$refs.recipes.updateIngredients(ingredients)
+    }
   }
 }
 </script>
