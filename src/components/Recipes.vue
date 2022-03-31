@@ -73,6 +73,10 @@ export default {
   methods: {
     updateIngredients(ingredients) {
       this.ingredients = ingredients
+
+      for (var key in this.ri_refs) {
+        this.ri_refs[key].getData()
+      }
     },
     setEditingRecipe(recipe) {
       this.recipe_ref.setEditingRecipe(recipe)
