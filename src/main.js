@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
 
 
-const rootUrl = 'http://127.0.0.1:8000'
+const rootUrl = 'https://receipe-manager.herokuapp.com'
 const app = createApp(App)
 
 try {
