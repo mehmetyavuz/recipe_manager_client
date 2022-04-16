@@ -1,4 +1,10 @@
-# recipe_manager_client
+This is a frontend (VueJS) of RecipeManager project.
+
+Back-end : https://github.com/mehmetyavuz/RecipeManager/tree/master
+
+## RecipeManager
+ A recipe management project which is for creating ingredients and recipes and calculating costs of recipes.
+
 
 ## Project setup
 ```
