@@ -1,3 +1,5 @@
+Live: https://dynamic-lokum-0bd285.netlify.app
+
 This is a frontend (VueJS) of RecipeManager project.
 
 Back-end : https://github.com/mehmetyavuz/RecipeManager/tree/master
